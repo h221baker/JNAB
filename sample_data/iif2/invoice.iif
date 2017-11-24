@@ -1,0 +1,8 @@
+!TRNS	TRNSID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	CLEAR	TOPRINT	NAMEISTAXABLE	ADDR1	ADDR3	TERMS	SHIPVIA	SHIPDATE
+!SPL	SPLID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	CLEAR	QNTY	PRICE	INVITEM	TAXABLE	OTHER2	YEARTODATE	WAGEBASE
+!ENDTRNS																	
+TRNS		INVOICE	7/18/98	Accounts Receivable	"Cook, Brian:2nd story addition"		205	1		N	Y	N			Net 30		7/16/98
+SPL		INVOICE	7/16/98	Construction:Labor			-55		Framing labor	N		55	Framing	N		0	0
+SPL		INVOICE	7/16/98	Construction:Materials			-120		Exterior wood door	N		120	Wood Door:Exterior	Y		0	0
+SPL		INVOICE	7/16/98	Construction:Materials			-30		Standard Doorknobs	N		30	Hardware:Doorknobs Std	Y		0	0
+ENDTRNS																	
