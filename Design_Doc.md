@@ -10,29 +10,29 @@
 
 ## TABLES:
 ### ACCOUNTS:
-- ID
-- NAME
-- TYPE
-- CURRENCY
-- RATE_TO
-- BALANCE
+- ID		// Integer
+- NAME		// String
+- TYPE		// Enum
+- CURRENCY	// Enum
+- RATE_TO	// Float
+- BALANCE	// Float
 
 ### JNAB_ACCOUNT_${ACCOUNT_ID}:
-- ID
-- NAME
-- BUDGET_ID
-- TYPE
+- ID		// Integer
+- NAME		// String
+- BUDGET_ID // Integer
+- TYPE		// Enum
 	If Type == Transfer:
-	- TRANSFER_ACCOUNT_ID
-	- TRANSFER_ACCOUNT_TRANSACTION_ID
+	- TRANSFER_ACCOUNT_ID				// Integer
+	- TRANSFER_ACCOUNT_TRANSACTION_ID	// Integer
 	Else:
 		DO NOTHING
+
 ### BUDGETS:
-- ID
-- NAME
-- AMOUNT
-- DURATION
-- 
+- ID		// Integer
+- NAME		// String
+- AMOUNT	// Float
+- DURATION	// Enum
 
 
 ## Design goal

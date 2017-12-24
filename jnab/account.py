@@ -2,7 +2,12 @@ import os
 import sys
 
 class Account:
-    name = ""
+    ID = 0
+    NAME = ""
+    TYPE = 0
+    CURRENCY = 0
+    RATE_TO = 0.0
+    BALANCE = 0.0
 
     def __init__(self, name):
         pass
