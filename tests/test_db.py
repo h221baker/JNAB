@@ -16,6 +16,9 @@ TEST_DB_FOLDER = os.path.join(os.path.dirname(__file__), 'test_resource')
 
 class TestDB(unittest.TestCase):
 
+    SIMPLE_ACCOUNT={"ID": 1, "NAME": "Chase Reserve", "TYPE": 1, "CURRENCY": 1, "RATE_TO": 1, "BALANCE": 100}
+    SIMPLE_DB = {"_default": {"1": {"NEXT_ACCOUT_ID": 1}}, "ACCOUNTS": {"1": SIMPLE_ACCOUNT}}
+
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
 
@@ -27,11 +30,15 @@ class TestDB(unittest.TestCase):
         database = db.DB(db_file, create_new=False);
         database._close();
 
+    def test_db_init_no_accounts_table(self):
+        db_file = os.path.join(TEST_DB_FOLDER, "bad_accounts.json")
+        with self.assertRaises(ValueError):
+            database = db.DB(db_file, create_new=False);
+
     def test_db_init_not_create_new(self):
         db_file = os.path.join(self.temp_dir, "not_exist.json")
         with self.assertRaises(ValueError):
             database = db.DB(db_file, create_new=False);
-            database._close()
 
     def test_db_init_create_new(self):
         db_file = os.path.join(self.temp_dir, "new_db.json")
@@ -50,15 +57,33 @@ class TestDB(unittest.TestCase):
     def test_db_get_accounts_sanity(self):
         db_file = os.path.join(TEST_DB_FOLDER, "simple.json")
         database = db.DB(db_file, create_new=False);
-        account_obj = database.get_account('Chase Reserve')
-        assert account_obj
+
+        with self.assertRaises(db.DBAccountLookupError):
+            account_obj = database.get_account(account_name=123)
+
+        with self.assertRaises(db.DBAccountLookupError):
+            account_obj = database.get_account(account_name=1.222)
+
+        with self.assertRaises(db.DBAccountLookupError):
+            account_obj = database.get_account(account_id=1.222)
+
+        with self.assertRaises(db.DBAccountLookupError):
+            account_obj = database.get_account(account_id="123")
+
         database._close();
+
+    def test_db_get_accounts_bad_input(self):
+        db_file = os.path.join(TEST_DB_FOLDER, "simple.json")
+        database = db.DB(db_file, create_new=False);
+        account_obj = database.get_account(account_name='Chase Reserve')
+        database._close();
+
 
     def test_db_get_accounts_not_exist(self):
         db_file = os.path.join(TEST_DB_FOLDER, "simple.json")
         database = db.DB(db_file, create_new=False);
         with self.assertRaises(db.DBAccountLookupError):
-            account_obj = database.get_account('Chase NOT Real')
+            account_obj = database.get_account(account_name='Chase NOT Real')
             assert not account_obj
         database._close();
 
@@ -69,7 +94,7 @@ class TestDB(unittest.TestCase):
             {"ID": 2, "NAME": "Chase Reserve", "TYPE": 1, "CURRENCY": 1, "RATE_TO": 1, "BALANCE": 100}])
 
         with self.assertRaises(db.DBAccountLookupError):
-            account_obj = database.get_account('Chase Reserve')
+            account_obj = database.get_account(account_name='Chase Reserve')
             assert not account_obj
         database.accounts_table.search.assert_called_once()
         database._close();
@@ -77,31 +102,42 @@ class TestDB(unittest.TestCase):
     def test_db_get_account_already_loaded_account_obj(self):
         db_file = os.path.join(TEST_DB_FOLDER, "simple.json")
         database = db.DB(db_file, create_new=False);
-        fakeAccount = 0x12345678
+        exsting_account = account.Account(self.SIMPLE_ACCOUNT)
 
-        database.account_obj_list['Chase Reserve'] = fakeAccount
-        account_obj = database.get_account('Chase Reserve')
-        assert account_obj == fakeAccount
+        database.account_obj_list[exsting_account.ID] = exsting_account
+
+        account_obj = database.get_account(account_id=1)
+        assert account_obj == exsting_account
+
+        account_obj = database.get_account(account_name='Chase Reserve')
+        assert account_obj == exsting_account
         database._close();
 
     def test_db_add_account_sanity(self):
         db_file = os.path.join(self.temp_dir, "new_account.json")
         database = db.DB(db_file, create_new=True);
 
-        account_obj = account.Account({})
-        account_obj.NAME = 'Chase Reserve'
+        account_obj = account.Account(self.SIMPLE_ACCOUNT)
         database.add_account(account_obj)
+        database._close()
 
-        assert False
+        database = db.DB(db_file, create_new=True);
+        account_obj_from_db = database.get_account(account_name=account_obj.NAME)
+        database._close()
+
+        assert account_obj_from_db
+        assert account_obj_from_db != account_obj
+        assert account_obj_from_db.NAME == account_obj.NAME
 
     def test_db_add_account_duplicate(self):
         db_file = os.path.join(TEST_DB_FOLDER, "simple.json")
         database = db.DB(db_file, create_new=False);
 
-        account_obj = account.Account({})
-        account_obj.NAME = 'Chase Reserve'
+        account_obj = account.Account(self.SIMPLE_ACCOUNT)
         with self.assertRaises(db.DBAccountAddError):
             database.add_account(account_obj)
+
+        database._close()
 
 
 if __name__ == '__main__':

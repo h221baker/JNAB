@@ -4,12 +4,12 @@ import sys
 class Account:
 
     def __init__(self, account_dict):
-        self.ID = 0
-        self.NAME = ""
-        self.TYPE = 0
-        self.CURRENCY = 0
-        self.RATE_TO = 0.0
-        self.BALANCE = 0.0
+        self.ID = account_dict['ID']
+        self.NAME = account_dict['NAME']
+        self.TYPE = account_dict['TYPE']
+        self.CURRENCY = account_dict['CURRENCY']
+        self.RATE_TO = account_dict['RATE_TO']
+        self.BALANCE = account_dict['BALANCE']
 
     def check_sanity(self):
         pass

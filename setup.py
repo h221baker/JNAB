@@ -22,4 +22,7 @@ setup(
     license='MIT',
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+
+    # Dependencies
+    install_requires=[ 'tinydb' ],
 )
