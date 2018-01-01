@@ -131,10 +131,11 @@ class TestDB(unittest.TestCase):
         database._close();
 
     def test_db_add_account_sanity(self):
+        simple_account={"NAME": "Chase Reserve", "TYPE": 1, "CURRENCY": 1, "RATE_TO": 1, "BALANCE": 100, "ACTIVE": False}
         db_file = os.path.join(self.temp_dir, "new_account.json")
         database = db.DB(db_file, create_new=True);
 
-        account_obj = account.Account(self.SIMPLE_ACCOUNT)
+        account_obj = account.Account(simple_account)
         database.add_account(account_obj)
         database._close()
 
