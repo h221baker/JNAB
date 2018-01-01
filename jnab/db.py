@@ -12,7 +12,6 @@ ACCOUNTS_TABLE_NAME = "ACCOUNTS"
 ACCOUNT_TABLE_NAME_FORMAT = "JNAB_ACCOUNT_%d"
 BUDGETS_TABLE_NAME = "BUDGETS"
 
-NEXT_ACCONUT_ID_FIELD_NAME = "NEXT_ACCOUNT_ID"
 
 logger = logging.getLogger("db")
 logger.setLevel(logging.DEBUG)
@@ -32,7 +31,13 @@ class DBAddError(Exception):
 class DBAccountAddError(DBAddError):
     pass
 
-class DB:
+class DBDelError(Exception):
+    pass
+
+class DBAccountDelError(DBDelError):
+    pass
+
+class DB(object):
 
     def __init__(self, db_path, create_new=False):
         if db_path and os.path.exists(db_path):
@@ -48,7 +53,6 @@ class DB:
             self.db = tinydb.TinyDB(db_path)
             self.accounts_table = self.db.table(ACCOUNTS_TABLE_NAME)
             self.default_table = self.db.table(DEFAULT_TABLE_NAME)
-            self.default_table.insert({NEXT_ACCONUT_ID_FIELD_NAME: 1})
         else:
             raise ValueError("Unexpected dbindex file (%s) is missing" % db_path)
 
@@ -57,18 +61,8 @@ class DB:
 
 
     def _close(self):
+        # TODO: check DB sanity and push and pending transactions
         self.db.close()
-
-    def _get_next_account_id(self):
-        db_metadata = self.default_table.get(doc_id=1)
-        return db_metadata[NEXT_ACCONUT_ID_FIELD_NAME]
-
-
-    def _increment_next_account_id(self):
-        db_metadata = self.default_table.get(doc_id=1)
-        db_metadata[NEXT_ACCONUT_ID_FIELD_NAME] += 1
-        self.default_table.update(db_metadata, doc_ids=[1])
-        return db_metadata[NEXT_ACCONUT_ID_FIELD_NAME]
 
     def get_transaction(self, transaction_id):
         pass
@@ -99,7 +93,7 @@ class DB:
         account_query = tinydb.Query()
         if account_id and account_name:
             logger.info("Looking up account via account id %d and account name %s" % (account_id, account_name))
-            accounts = self.accounts_table.search((account_query.NAME == account_name) & (account_query.id == account_id))
+            accounts = self.accounts_table.search((account_query.NAME == account_name) & (account_query.ID == account_id))
         elif account_id:
             logger.info("Looking up account via account id %d" % (account_id))
             accounts = self.accounts_table.search(account_query.ID == account_id)
@@ -108,7 +102,12 @@ class DB:
             accounts = self.accounts_table.search(account_query.NAME == account_name)
 
         if not accounts:
-            raise DBAccountLookupError("Account '%s' does not exist." % account_name)
+            if account_id and account_name:
+                raise DBAccountLookupError("Account ID '%d' and Account NAME '%s' does not exist." % (account_id, account_name))
+            elif account_id:
+                raise DBAccountLookupError("Account ID '%d' does not exist." % account_id)
+            elif account_name:
+                raise DBAccountLookupError("Account NAME '%s' does not exist." % account_name)
         elif len(accounts) > 1:
             raise DBAccountLookupError("Multiple accounts with similar account name found.")
         else:
@@ -140,25 +139,38 @@ class DB:
 
         # Get the next increment of account ID
         # TODO: Test this
-        account_obj.ID = self._increment_next_account_id()
+        account_obj.ID = self.accounts_table._get_next_id()
         logger.info("Adding new account %s with account id %d." % (account_obj.NAME, account_obj.ID))
 
         # Insert the account information info into the master accounts table
         self.account_obj_list[account_obj.ID] = account_obj
-        self.accounts_table.insert(account_obj.__dict__)
+        self.accounts_table.insert(account_obj._dict())
 
         # Create new accoutns table using the account id
         # TODO: Test this
+        logger.info("Creating new account transaction table for account ID %s" % account_obj.ID)
         new_account_table = self.db.table(ACCOUNT_TABLE_NAME_FORMAT % account_obj.ID)
 
-    def del_account(self, account_obj):
-        pass
+    def del_account(self, account_id=None, account_name=None):
+        account_query = tinydb.Query()
+        if account_id and account_name:
+            del_account_obj = self.get_account(account_id=account_id, account_name=account_name)
+            del_account_obj.ACTIVE = False
+            self.accounts_table.update(del_account_obj._dict(), (account_query.ID == del_account_obj.ID) & (account_query.NAME == del_account_obj.NAME))
+        elif account_id:
+            del_account_obj = self.get_account(account_id=account_id)
+            del_account_obj.ACTIVE = False
+            self.accounts_table.update(del_account_obj._dict(), account_query.ID == del_account_obj.ID)
+        elif account_name:
+            del_account_obj = self.get_account(account_name=account_name)
+            del_account_obj.ACTIVE = False
+            self.accounts_table.update(del_account_obj._dict(), account_query.NAME == del_account_obj.NAME)
 
-    def modify_account(self, new_account_obj):
-        pass
+    def modify_account(self, updated_account_obj):
+        account_query = tinydb.Query()
+        # Expected an account object that was created via the get_account() function
+        if (not updated_account_obj.ID in self.account_obj_list) or (updated_account_obj != self.account_obj_list[updated_account_obj.ID]):
+            raise DBLookupError("Invalid updated_account_obj %s" % updated_account_obj)
 
-    def stage_change(self):
-        pass
-
-    def commit(self):
-        pass
+        self.accounts_table.update(updated_account_obj._dict(),
+                (account_query.NAME == updated_account_obj.NAME) & (account_query.ID == updated_account_obj.ID))

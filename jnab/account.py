@@ -1,15 +1,19 @@
-import os
-import sys
+class Account(object):
 
-class Account:
+    account_db_fields = ['ID', 'NAME', 'TYPE', 'CURRENCY', 'RATE_TO', 'BALANCE', 'ACTIVE']
 
     def __init__(self, account_dict):
-        self.ID = account_dict['ID']
-        self.NAME = account_dict['NAME']
-        self.TYPE = account_dict['TYPE']
-        self.CURRENCY = account_dict['CURRENCY']
-        self.RATE_TO = account_dict['RATE_TO']
-        self.BALANCE = account_dict['BALANCE']
+        for field in self.account_db_fields:
+            self.__setattr__(field, account_dict[field])
+
+    # TODO: to make some fields inmutable
+    # def __setattr__(self):
+
+    def _dict(self):
+        account_dict = {}
+        for field in self.account_db_fields:
+            account_dict[field] = self.__getattribute__(field)
+        return account_dict
 
     def check_sanity(self):
         pass
