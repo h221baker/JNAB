@@ -4,7 +4,7 @@ import sys
 import logging
 import tinydb
 
-from . import account
+import account
 
 DEFAULT_DB_FILENAME = 'jnab_db.json'
 DEFAULT_TABLE_NAME = "_default"
@@ -75,6 +75,12 @@ class DB(object):
 
     def modify_transaction(self, account_obj, transaction_obj):
         pass
+
+    def get_all_accounts(self):
+        # Call get_account() on all accounts to get it loaded into account_obj_list
+        for account in self.accounts_table.all():
+            self.get_account(account_id=account['ID'], account_name=account['NAME'])
+        return self.account_obj_list.values()
 
     def get_account(self, account_id=None, account_name=None):
         if not account_id and not account_name:

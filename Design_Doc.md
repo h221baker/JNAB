@@ -18,21 +18,24 @@
 - BALANCE	// Float
 
 ### JNAB_ACCOUNT_${ACCOUNT_ID}:
-- ID		// Integer
-- NAME		// String
-- BUDGET_ID // Integer
-- TYPE		// Enum
+- ID				// Integer
+- DATE				// String in parseable format
+- NAME				// String
+- BUDGET_ID			// Integer
+- TYPE				// Enumerate
 	If Type == Transfer:
-	- TRANSFER_ACCOUNT_ID				// Integer
-	- TRANSFER_ACCOUNT_TRANSACTION_ID	// Integer
+	- META.TRANSFER_ACCOUNT_ID				// Integer
+	- META.TRANSFER_ACCOUNT_TRANSACTION_ID	// Integer
 	Else:
 		DO NOTHING
+- AMOUNT			// Integer
+- CLEAR				// Boolean flag
 
 ### BUDGETS:
-- ID		// Integer
-- NAME		// String
-- AMOUNT	// Float
-- DURATION	// Enum
+- ID				// Integer
+- NAME				// String
+- AMOUNT			// Float
+- DURATION			// Enumerate
 
 
 ## Design goal
@@ -51,3 +54,6 @@
 	- Class AccountLoader: create the account objects upon loading
 	- Class Budget: Maintain budget across all accounts
 	- Class BudgetLoader: create the budget account across all accounts
+
+	Shell interface
+	- List existing accounts

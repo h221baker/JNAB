@@ -27,6 +27,9 @@ class Account(object):
             account_dict[attr] = self.__getattribute__(attr)
         return account_dict
 
+    def __repr__(self):
+        return repr(self._dict())
+
     def check_sanity(self):
         for attr in self.account_db_attributes:
             if not hasattr(self, attr):

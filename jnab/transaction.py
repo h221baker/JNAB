@@ -5,7 +5,7 @@ class TransactionInvalidAttributeError(TransactionError):
     pass
 
 class Transaction(object):
-    transaction_db_attributes = ['ID', 'DATE', 'NAME', 'ACCOUNT_ID', 'BUDGET_ID', 'AMOUNT', 'CLEAR']
+    transaction_db_attributes = ['ID', 'DATE', 'NAME', 'TYPE', 'BUDGET_ID', 'AMOUNT', 'META', 'CLEAR']
 
     def __init__(self, transaction_dict=None):
         if transaction_dict:
@@ -28,3 +28,6 @@ class Transaction(object):
         for attr in self.account_db_attributes:
             account_dict[attr] = self.__getattribute__(attr)
         return account_dict
+
+    def __repr__(self):
+        return repr(self._dict())
