@@ -4,8 +4,6 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-here = path.abspath(path.dirname(__file__))
-
 setup(
     name='jnab',
 
@@ -22,6 +20,9 @@ setup(
     license='MIT',
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+
+    test_suite="jnab.test",
+    tests_require=['pytest'],
 
     # Dependencies
     install_requires=[ 'tinydb' ],
