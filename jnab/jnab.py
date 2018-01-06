@@ -71,7 +71,10 @@ class JnabShell(cmd.Cmd):
         account_list = self.database.get_all_accounts()
         for account in account_list:
             if account.ACTIVE:
-                print(str(account))
+                if account == self.curr_account:
+                    print("* %s" % str(account))
+                else:
+                    print("  %s" % str(account))
 
     def help_ls(self):
         print("List out all active accounts")
