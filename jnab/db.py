@@ -5,6 +5,7 @@ import logging
 import tinydb
 
 import account
+import util
 
 DEFAULT_DB_FILENAME = 'jnab_db.json'
 DEFAULT_TABLE_NAME = "_default"
@@ -12,9 +13,7 @@ ACCOUNTS_TABLE_NAME = "ACCOUNTS"
 ACCOUNT_TABLE_NAME_FORMAT = "JNAB_ACCOUNT_%d"
 BUDGETS_TABLE_NAME = "BUDGETS"
 
-
-logger = logging.getLogger("db")
-logger.setLevel(logging.DEBUG)
+logger = util.get_logger("db")
 
 class DBLookupError(Exception):
     pass
@@ -79,6 +78,7 @@ class DB(object):
     def get_all_accounts(self):
         # Call get_account() on all accounts to get it loaded into account_obj_list
         for account in self.accounts_table.all():
+            logger.debug(repr(account))
             self.get_account(account_id=account['ID'], account_name=account['NAME'])
         return self.account_obj_list.values()
 
@@ -89,6 +89,8 @@ class DB(object):
             raise DBAccountLookupError("Expected type int for account_id, instead got %s" % type(account_id))
         if account_name and type(account_name) != str:
             raise DBAccountLookupError("Expected type str for account_name, instead got %s" % type(account_name))
+        if account_name:
+            account_name = account_name.upper()
 
         # Look up if this account have already been loaded
         if account_id in self.account_obj_list:
