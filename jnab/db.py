@@ -100,13 +100,13 @@ class DB(object):
         # Nop, now load the account from the database
         account_query = tinydb.Query()
         if account_id and account_name:
-            logger.info("Looking up account via account id %d and account name %s" % (account_id, account_name))
+            logger.debug("Looking up account via account id %d and account name %s" % (account_id, account_name))
             accounts = self.accounts_table.search((account_query.NAME == account_name) & (account_query.ID == account_id))
         elif account_id:
-            logger.info("Looking up account via account id %d" % (account_id))
+            logger.debug("Looking up account via account id %d" % (account_id))
             accounts = self.accounts_table.search(account_query.ID == account_id)
         elif account_name:
-            logger.info("Looking up account via account name %s" % (account_name))
+            logger.debug("Looking up account via account name %s" % (account_name))
             accounts = self.accounts_table.search(account_query.NAME == account_name)
 
         if not accounts:
