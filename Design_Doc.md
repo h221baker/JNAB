@@ -37,6 +37,12 @@
 - AMOUNT			// Float
 - DURATION			// Enumerate
 
+Types of budget:
+- Transportation
+- Lodging
+- Food
+- Misc
+- Reoccurring
 
 ## Design goal
 

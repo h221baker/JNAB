@@ -1,5 +1,6 @@
 import logging
 
+
 def get_logger(name):
     logger = logging.getLogger(name)
     sh = logging.StreamHandler()
@@ -7,4 +8,3 @@ def get_logger(name):
     logger.addHandler(sh)
     logger.setLevel(logging.DEBUG)
     return logger
-

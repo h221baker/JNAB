@@ -2,9 +2,17 @@ import unittest
 
 from jnab import account
 
+
 class TestAccount(unittest.TestCase):
 
-    SIMPLE_ACCOUNT={"ID": 1, "NAME": "Chase Reserve", "TYPE": 1, "CURRENCY": 1, "RATE_TO": 1, "BALANCE": 100, "ACTIVE": False}
+    SIMPLE_ACCOUNT = {
+            "ID": 1,
+            "NAME": "Chase Reserve",
+            "TYPE": 1,
+            "CURRENCY": 1,
+            "RATE_TO": 1,
+            "BALANCE": 100,
+            "ACTIVE": False}
 
     def test_account_init_sanity(self):
         account_obj = account.Account(self.SIMPLE_ACCOUNT)
@@ -26,4 +34,3 @@ class TestAccount(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

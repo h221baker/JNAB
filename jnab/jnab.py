@@ -9,14 +9,17 @@ import util
 
 logger = util.get_logger("jnab")
 
+
 class ArgumentParserError(Exception):
     pass
+
 
 class JnabArgparser(argparse.ArgumentParser):
 
     # Override the error function to only throw error instead of exiting
     def error(self, message):
         raise ArgumentParserError(message)
+
 
 # Argument checking function for account.Currency
 def arg_type_account_currency(line):
@@ -33,6 +36,7 @@ def arg_type_account_currency(line):
     logger.debug("arg_type_account_currency: exit")
     return line
 
+
 # Argument checking function for account.Type
 def arg_type_account_type(line):
     logger.debug("arg_type_account_type: entry")
@@ -48,16 +52,30 @@ def arg_type_account_type(line):
     logger.debug("arg_type_account_type: exit")
     return line
 
+
 class JnabShell(cmd.Cmd):
 
     def preloop(self):
         self.database = db.DB(db.DEFAULT_DB_FILENAME, create_new=True)
         self.curr_account = None
 
-        self.do_new_parser = JnabArgparser(description="Argument parser for new account command")
-        self.do_new_parser.add_argument("-n", "--name", type=str, required=True)
-        self.do_new_parser.add_argument("-t", "--type", type=arg_type_account_type, required=True)
-        self.do_new_parser.add_argument("-c", "--currency", type=arg_type_account_currency, required=True)
+        self.do_new_parser = JnabArgparser(
+                description="Argument parser for new account command")
+        self.do_new_parser.add_argument(
+                "-n",
+                "--name",
+                type=str,
+                required=True)
+        self.do_new_parser.add_argument(
+                "-t",
+                "--type",
+                type=arg_type_account_type,
+                required=True)
+        self.do_new_parser.add_argument(
+                "-c",
+                "--currency",
+                type=arg_type_account_currency,
+                required=True)
 
     @classmethod
     def split_line(self, line):

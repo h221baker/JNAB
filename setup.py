@@ -21,8 +21,8 @@ setup(
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
-    test_suite="jnab.test",
-    tests_require=['pytest'],
+    test_suite="tests",
+    tests_require=['pytest' ],
 
     # Dependencies
     install_requires=[ 'tinydb' ],
