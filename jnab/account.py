@@ -3,6 +3,7 @@ import logging
 from enum import Enum
 
 import util
+import db
 
 logger = util.get_logger("account")
 
@@ -55,6 +56,8 @@ class Account(object):
                     "Unable to change existing permenent"
                     "account attribute %s" % name)
 
+        # TODO: Peform type check for value set
+
         # Modify the some attributes before setting it
         if name == 'TYPE':
             if type(value) is int:
@@ -64,6 +67,8 @@ class Account(object):
                         self,
                         name,
                         Type(Type.__getattr__(value.upper()).value))
+            else:
+                raise ValueError("Illegal value type %s" % repr(type(value)))
         elif name == 'CURRENCY':
             if type(value) is int:
                 super.__setattr__(self, name, Currency(value))
@@ -73,7 +78,7 @@ class Account(object):
                         name,
                         Currency(Currency.__getattr__(value.upper()).value))
             else:
-                abort()
+                raise ValueError("Illegal value type %s" % repr(type(value)))
         elif name == 'NAME':
             super.__setattr__(self, name, value.upper())
         else:
@@ -104,7 +109,10 @@ class Account(object):
     def check_sanity(self):
         for attr in self.account_db_attributes:
             if not hasattr(self, attr):
+                logger.debug(
+                        "Missing attr %s in account %s" % (attr, self.ID))
                 return False
+        return True
         # TODO: more in depth check of each field with type and content
         """
         - Configure:
@@ -114,3 +122,15 @@ class Account(object):
         -- conversion rate
         -- transaction lookup table
         """
+
+    def get_transaction(self, transaction_id):
+        return db.DB.get_instance().get_transaction(self, transaction_id)
+
+    def add_transaction(self, transaction_obj):
+        return db.DB.get_instance().add_transaction(self, transaction_obj)
+
+    def del_transaction(self, transaction_id):
+        return db.DB.get_instance().del_transaction(self, transaction_id)
+
+    def modify_transaction(self, transaction_obj):
+        return db.DB.get_instance().modify_transaction(self, transaction_obj)

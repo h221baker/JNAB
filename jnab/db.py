@@ -46,7 +46,16 @@ class DBAccountDelError(DBDelError):
 
 class DB(object):
 
+    singleton_db_obj = None
+
+    @classmethod
+    def get_instance(cls):
+        return cls.singleton_db_obj
+
     def __init__(self, db_path, create_new=False):
+        if DB.singleton_db_obj:
+            raise RuntimeError("An instance of DB already exist!")
+
         if db_path and os.path.exists(db_path):
             self.db = tinydb.TinyDB(db_path)
             if ACCOUNTS_TABLE_NAME in self.db.tables() and \
@@ -71,20 +80,26 @@ class DB(object):
         self.db_path = db_path
         self.account_obj_list = {}
 
+        DB.singleton_db_obj = self
+
     def _close(self):
         # TODO: check DB sanity and push and pending transactions
         self.db.close()
+        DB.singleton_db_obj = None
 
-    def get_transaction(self, transaction_id):
+    def get_recent_transactions(self, account_obj, n=None):
+        pass
+
+    def get_transaction(self, account_obj, transaction_id):
         pass
 
     def add_transaction(self, account_obj, transaction_obj):
         pass
 
-    def del_transaction(self, account_obj, transaction_obj):
+    def del_transaction(self, account_obj, transaction_id):
         pass
 
-    def modify_transaction(self, account_obj, transaction_obj):
+    def modify_transaction(self, account_obj, new_transaction_obj):
         pass
 
     def get_all_accounts(self):
@@ -161,7 +176,7 @@ class DB(object):
                 # number of fields
                 # TODO: more complicated sanity check can be added to account,
                 # and used as part of overall DB checkup.
-                if new_account_obj.check_sanity():
+                if not new_account_obj.check_sanity():
                     raise ValueError(
                             "Invalid accounts data for account '%s'." %
                             account_name)
