@@ -94,7 +94,10 @@ class DB(object):
         pass
 
     def add_transaction(self, account_obj, transaction_obj):
-        pass
+        # Get corresponding db table for account
+        account_table = self.db.table(ACCOUNT_TABLE_NAME_FORMAT % account_obj.ID)
+        transaction_obj.ID = account_table._get_next_id()
+        account_table.insert(transaction_obj._dict())
 
     def del_transaction(self, account_obj, transaction_id):
         pass

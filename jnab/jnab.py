@@ -4,6 +4,7 @@ import logging
 import argparse
 import re
 
+import transaction
 import account
 import util
 
@@ -16,8 +17,16 @@ class ArgumentParserError(Exception):
 
 class JnabArgparser(argparse.ArgumentParser):
 
-    # Override the error function to only throw error instead of exiting
+    # Override the exit function to only throw error instead of exiting
+    def exit(self, status=0, message=None):
+        logger.info("JnabArgparser exit method called: (%d) %s" %
+                (status, message))
+        raise ArgumentParserError(message)
+
+    # Override the error function to only throw error instead of calling exit
+    # and avoid double printing error message
     def error(self, message):
+        logger.info("JnabArgparser error method called: %s" % message)
         raise ArgumentParserError(message)
 
 
@@ -59,6 +68,7 @@ class JnabShell(cmd.Cmd):
         self.database = db.DB(db.DEFAULT_DB_FILENAME, create_new=True)
         self.curr_account = None
 
+        # new account parser
         self.do_new_parser = JnabArgparser(
                 description="Argument parser for new account command")
         self.do_new_parser.add_argument(
@@ -76,6 +86,40 @@ class JnabShell(cmd.Cmd):
                 "--currency",
                 type=arg_type_account_currency,
                 required=True)
+
+        # add transaction parser
+        self.do_add_parser = JnabArgparser(
+                description="Argument parser for add transaction command")
+        self.do_add_parser.add_argument(
+                "-n",
+                "--name",
+                type=str,
+                required=True)
+        self.do_add_parser.add_argument(
+                "-a",
+                "--amount",
+                type=int,
+                required=True)
+        self.do_add_parser.add_argument(
+                "-d",
+                "--date",
+                type=str,
+                required=False)
+        self.do_add_parser.add_argument(
+                "-b",
+                "--budget",
+                type=str,
+                required=False)
+        self.do_add_parser.add_argument(
+                "-t",
+                "--transfer",
+                action="store_true",
+                required=False)
+        self.do_add_parser.add_argument(
+                "-c",
+                "--clear",
+                action='store_true',
+                required=False)
 
     @classmethod
     def split_line(self, line):
@@ -156,7 +200,7 @@ class JnabShell(cmd.Cmd):
             self.database.add_account(new_account_obj)
 
     def help_new(self):
-        print(self.do_new_parser.print_usage())
+        self.do_new_parser.print_usage()
 
     """
     Disable an existing account
@@ -186,10 +230,28 @@ class JnabShell(cmd.Cmd):
             print("Please select an account first!!")
             return False
 
-        # TODO: Implement transactions
+        argv = self.split_line(line)
+        try:
+            args = self.do_add_parser.parse_args(args=argv)
+        except ArgumentParserError as e:
+            logger.error("ArgumentParserError for %s" % line)
+            if e:
+                print(e)
+                logger.error(e)
+            args = None
+        if args:
+            # Set default account values
+            new_trans_obj = transaction.Transaction({})
+            new_trans_obj.DATE = args.date
+            new_trans_obj.NAME = args.name.strip("\"")
+            new_trans_obj.TYPE = args.transfer
+            new_trans_obj.BUDGET_ID = args.budget
+            new_trans_obj.AMOUNT = args.amount
+            new_trans_obj.CLEAR = args.clear
+            self.curr_account.add_transaction(new_trans_obj)
 
     def help_add(self):
-        print("add <NAME> <AMOUNT> [DATE]")
+        self.do_add_parser.print_usage()
 
     def do_EOF(self, line):
         self.database._close()

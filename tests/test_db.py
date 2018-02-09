@@ -10,6 +10,7 @@ from unittest.mock import MagicMock
 
 from jnab import db
 from jnab import account
+from jnab import transaction
 
 TEST_DB_FOLDER = os.path.join(os.path.dirname(__file__), 'test_resource')
 
@@ -24,6 +25,17 @@ class TestDB(unittest.TestCase):
             "RATE_TO": 1,
             "BALANCE": 100,
             "ACTIVE": False}
+
+    TEST_TRANSACTION_1 = {
+            'ID': 1,
+            'DATE': "2018-02-20",
+            'NAME': "Sample type",
+            'TYPE': 2,
+            'BUDGET_ID': None,
+            'AMOUNT': 123,
+            'META': None,
+            'CLEAR': True
+            }
 
     def _setupTestDB(self):
         # TEMP HACK
@@ -252,17 +264,27 @@ class TestDB(unittest.TestCase):
         with self.assertRaises(db.DBLookupError):
             self.database.modify_account(account_obj)
 
-    def test_get_all_accounts_sanity(self):
+    def test_db_get_all_accounts_sanity(self):
         db_file = os.path.join(self.temp_dir, "sample_complete_accounts.json")
         self.database = db.DB(db_file, create_new=False)
         account_list = self.database.get_all_accounts()
         self.assertEqual(len(account_list), 4)
 
-    def test_get_recent_transactions_sanity(self):
+    def test_db_get_recent_transactions_sanity(self):
         db_file = os.path.join(self.temp_dir, "sample_complete_accounts.json")
         self.database = db.DB(db_file, create_new=False)
         account_obj = self.database.get_account(account_id=1)
         recent_trans = self.database.get_recent_transactions(account_obj)
+
+    def test_db_get_transaction_sanity(self):
+        pass
+
+    def test_db_add_transaction_sanity(self):
+        db_file = os.path.join(self.temp_dir, "sample_complete_accounts.json")
+        self.database = db.DB(db_file, create_new=False)
+        account_obj = self.database.get_account(account_id=1)
+        transaction_obj_1 = transaction.Transaction(self.TEST_TRANSACTION_1)
+        self.database.add_transaction(account_obj, transaction_obj_1)
 
 
 if __name__ == '__main__':

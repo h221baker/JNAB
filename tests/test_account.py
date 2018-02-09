@@ -73,6 +73,14 @@ class TestAccount(unittest.TestCase):
         with self.assertRaises(account.AccountInvalidAttributeError):
             account_obj.SOSO = 123
 
+    def test_account_check_sanity_sanity(self):
+        account_obj = account.Account(self.SIMPLE_ACCOUNT)
+        self.assertTrue(account_obj.check_sanity())
+
+    def test_account_check_sanity_error(self):
+        account_obj = account.Account("")
+        self.assertFalse(account_obj.check_sanity())
+
 
 if __name__ == '__main__':
     unittest.main()

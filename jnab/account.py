@@ -1,5 +1,6 @@
 import logging
 
+import datetime
 from enum import Enum
 
 import util
@@ -32,6 +33,8 @@ class AccountInvalidAttributeError(AccountError):
 
 class Account(object):
 
+    # TODO: Quick adjust account balance
+
     account_db_attributes = [
             'ID',
             'NAME',
@@ -41,7 +44,7 @@ class Account(object):
             'BALANCE',
             'ACTIVE']
 
-    def __init__(self, account_dict):
+    def __init__(self, account_dict={}):
         for key in account_dict:
             if key in self.account_db_attributes:
                 self.__setattr__(key, account_dict[key])
@@ -110,7 +113,7 @@ class Account(object):
         for attr in self.account_db_attributes:
             if not hasattr(self, attr):
                 logger.debug(
-                        "Missing attr %s in account %s" % (attr, self.ID))
+                        "Missing attr %s in account_obj" % attr)
                 return False
         return True
         # TODO: more in depth check of each field with type and content
@@ -127,7 +130,27 @@ class Account(object):
         return db.DB.get_instance().get_transaction(self, transaction_id)
 
     def add_transaction(self, transaction_obj):
-        return db.DB.get_instance().add_transaction(self, transaction_obj)
+        if not transaction_obj.DATE:
+            transaction_obj.DATE = str(datetime.date.today())
+
+        # TODO: Check if is transfer transaction, if so create new
+        #       Transaction for corresponding account and link 2 transactions
+        #       If transfer from account with different currency, need to 
+        #       prompt user for exchange rate, or amount in origin currency
+
+        # TODO: Update account BALANCE, make sure it is not in negative,
+        #       else reject transaction
+        if self.BALANCE >= transaction_obj.AMOUNT:
+            self.BALANCE = self.BALANCE - transaction_obj.AMOUNT
+
+        transaction_obj.META = None
+        db.DB.get_instance().add_transaction(self, transaction_obj)
+
+        # TODO: Update RATE_TO if is transfer transaction
+
+        # Update account data in DB
+        db.DB.get_instance().modify_account(self)
+
 
     def del_transaction(self, transaction_id):
         return db.DB.get_instance().del_transaction(self, transaction_id)

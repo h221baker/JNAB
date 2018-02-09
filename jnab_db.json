@@ -1,1 +1,8 @@
-{"_default": {}, "ACCOUNTS": {"2": {"ID": 1, "NAME": "CHASE RESERVE", "TYPE": 2, "CURRENCY": 1, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}, "4": {"ID": 3, "NAME": "EURO", "TYPE": 3, "CURRENCY": 2, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}, "6": {"ID": 5, "NAME": "SWISS FRANC", "TYPE": 3, "CURRENCY": 3, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}, "8": {"ID": 7, "NAME": "CHINESE YUAN", "TYPE": 3, "CURRENCY": 4, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}, "10": {"ID": 9, "NAME": "SCHWAB", "TYPE": 1, "CURRENCY": 1, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}}, "JNAB_ACCOUNT_1": {}, "JNAB_ACCOUNT_3": {}, "JNAB_ACCOUNT_5": {}, "JNAB_ACCOUNT_7": {}, "JNAB_ACCOUNT_9": {}}
+{"_default": {}, "ACCOUNTS": {"2": {"ID": 1, "NAME": "CHASE RESERVE", "TYPE": 2, "CURRENCY": 1, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}, "4": {"ID": 3, "NAME": "EURO", "TYPE": 3, "CURRENCY": 2, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}, "6": {"ID": 5, "NAME": "SWISS FRANC", "TYPE": 3, "CURRENCY": 3, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}, "8": {"ID": 7, "NAME": "CHINESE YUAN", "TYPE": 3, "CURRENCY": 4, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}, "10": {"ID": 9, "NAME": "SCHWAB", "TYPE": 1, "CURRENCY": 1, "RATE_TO": 1, "BALANCE": 0, "ACTIVE": true}},
+	"JNAB_ACCOUNT_1": {"2": 
+		{"ID": 1, "DATE": "2018-02-09", "NAME": "first_trans", "TYPE": false, "BUDGET_ID": null, "AMOUNT": 10, "META": null, "CLEAR": true}},
+	"JNAB_ACCOUNT_3": {"2": 
+		{"ID": 1, "DATE": "2018-02-09", "NAME": "somethingsome", "TYPE": false, "BUDGET_ID": null, "AMOUNT": 10, "META": null, "CLEAR": false}},
+	"JNAB_ACCOUNT_5": {},
+	"JNAB_ACCOUNT_7": {},
+	"JNAB_ACCOUNT_9": {}}
