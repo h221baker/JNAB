@@ -1,14 +1,13 @@
 import cmd
-import db
-import logging
 import argparse
 import re
 
 import transaction
 import account
-import util
 
-logger = util.get_logger("jnab")
+from util import *
+
+logger = get_logger("jnab")
 
 
 class ArgumentParserError(Exception):
@@ -64,8 +63,11 @@ def arg_type_account_type(line):
 
 class JnabShell(cmd.Cmd):
 
+    def __init__(self, database):
+        super().__init__()
+        self.database = database
+
     def preloop(self):
-        self.database = db.DB(db.DEFAULT_DB_FILENAME, create_new=True)
         self.curr_account = None
 
         # new account parser

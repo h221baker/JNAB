@@ -3,10 +3,10 @@ import logging
 import datetime
 from enum import Enum
 
-import util
-import db
+from database import db
+from util import get_logger
 
-logger = util.get_logger("account")
+logger = get_logger("account")
 
 
 class Currency(Enum):

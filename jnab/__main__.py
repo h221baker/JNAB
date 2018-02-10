@@ -1,3 +1,5 @@
-import jnab
+from shell import shell
+from database import db
 
-jnab.JnabShell().cmdloop()
+jnabDB = db.DB(db.DEFAULT_DB_FILENAME, create_new=False)
+shell.JnabShell(jnabDB).cmdloop()

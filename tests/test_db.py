@@ -8,7 +8,7 @@ import logging
 
 from unittest.mock import MagicMock
 
-from jnab import db
+from jnab.database import db
 from jnab import account
 from jnab import transaction
 

@@ -5,7 +5,7 @@ import logging
 import tinydb
 
 import account
-import util
+from util import *
 
 DEFAULT_DB_FILENAME = 'jnab_db.json'
 DEFAULT_TABLE_NAME = "_default"
@@ -13,7 +13,7 @@ ACCOUNTS_TABLE_NAME = "ACCOUNTS"
 ACCOUNT_TABLE_NAME_FORMAT = "JNAB_ACCOUNT_%d"
 BUDGETS_TABLE_NAME = "BUDGETS"
 
-logger = util.get_logger("db")
+logger = get_logger("db")
 
 
 class DBLookupError(Exception):

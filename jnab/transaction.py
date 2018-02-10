@@ -3,9 +3,9 @@ import logging
 import datetime
 from enum import Enum
 
-import util
+from util import get_logger
 
-logger = util.get_logger("transaction")
+logger = get_logger("transaction")
 
 
 class TransactionError(Exception):
