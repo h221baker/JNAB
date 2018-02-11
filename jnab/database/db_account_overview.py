@@ -1,5 +1,7 @@
+import account
 from util import *
-from db import *
+from . import db
+from . import db_exceptions
 
 import tinydb
 
@@ -35,16 +37,16 @@ class DBAccountOverview(object):
 
     def get_account(self, account_id=None, account_name=None):
         if not account_id and not account_name:
-            raise DBAccountLookupError(
+            raise db_exceptions.DBAccountLookupError(
                     "Missing both account id and account name,"
                     "need at least one need to look up account")
         else:
             if account_id and type(account_id) != int:
-                raise DBAccountLookupError(
+                raise db_exceptions.DBAccountLookupError(
                         "Expected type int for account_id, instead got %s" %
                         type(account_id))
             elif account_name and type(account_name) != str:
-                raise DBAccountLookupError(
+                raise db_exceptions.DBAccountLookupError(
                         "Expected type str for account_name, instead got %s" %
                         type(account_name))
 
@@ -59,16 +61,18 @@ class DBAccountOverview(object):
 
         # Nop, now load the account from the database
         account_query = tinydb.Query()
+        debug_format_str = "Looking up account via "
         if account_id and account_name:
+            debug_format_str += " account id %d and account name %s." % (account_id, account_name)
             query_func = (account_query.NAME == account_name) & (account_query.ID == account_id)
         elif account_id:
+            debug_format_str += " account id %d." % account_id
             query_func = account_query.ID == account_id
         elif account_name:
+            debug_format_str += " account name %s." % account_name
             query_func = account_query.NAME == account_name
 
-        logger.debug(
-                "Looking up account via account id %d"
-                "and account name %s" % (account_id, account_name))
+        logger.debug(debug_format_str)
         accounts = self.account_tbl.search(query_func)
 
         if not accounts:
@@ -79,9 +83,9 @@ class DBAccountOverview(object):
                 if not msg:
                     msg += " and "
                 msg += "Account NAME '%s' does not exist." % account_name
-            raise DBAccountLookupError(msg)
+            raise db_exceptions.DBAccountLookupError(msg)
         elif len(accounts) > 1:
-            raise DBAccountLookupError(
+            raise db_exceptions.DBAccountLookupError(
                     "Multiple accounts found.")
         else:
             account_id = accounts[0]['ID']
@@ -107,14 +111,14 @@ class DBAccountOverview(object):
             # with same name Account ID is assumed to be false since
             # this is a newly created account_obj
             self.get_account(account_name=account_obj.NAME)
-        except DBAccountLookupError as e:
+        except db_exceptions.DBAccountLookupError as e:
             # If a DBAccountLookupError is observed that mean
             # the account does not exist
             pass
         else:
             # else throw error that duplicate account is attempted
             # to be created
-            raise DBAccountAddError(
+            raise db_exceptions.DBAccountAddError(
                     "Attempting add new account with dupicate name '%s'" %
                     account_obj.NAME)
 
@@ -129,13 +133,8 @@ class DBAccountOverview(object):
         self.account_obj_list[account_obj.ID] = account_obj
         self.account_tbl.insert(account_obj._dict())
 
-        # Create new accoutns table using the account id
-        # TODO: Test this
-        logger.info(
-                "Creating new account transaction table for account ID %s" %
-                account_obj.ID)
-        new_account_table = self.db.table(
-                ACCOUNT_TABLE_NAME_FORMAT % account_obj.ID)
+        return account_obj
+
 
     def del_account(self, account_id=None, account_name=None):
         account_query = tinydb.Query()
@@ -167,7 +166,7 @@ class DBAccountOverview(object):
         if (updated_account_obj.ID not in self.account_obj_list) or \
                 (updated_account_obj !=
                     self.account_obj_list[updated_account_obj.ID]):
-            raise DBLookupError(
+            raise db_exceptions.DBLookupError(
                     "Invalid updated_account_obj %s" % updated_account_obj)
 
         self.account_tbl.update(

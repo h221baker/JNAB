@@ -2,6 +2,7 @@ import cmd
 import argparse
 import re
 
+import database
 import transaction
 import account
 
@@ -157,7 +158,7 @@ class JnabShell(cmd.Cmd):
 
         try:
             return self.database.get_account(account_id=id, account_name=name)
-        except db.DBAccountLookupError as e:
+        except database.DBAccountLookupError as e:
             # Determine if using account NAME or ID for selection
             print("Invalid account info, unable to find account %s" % line)
             return None
