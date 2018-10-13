@@ -23,14 +23,9 @@ class Type(Enum):
 
 
 class Transaction(object):
-    transaction_db_attributes = ['ID',
-                                 'DATE',
-                                 'NAME',
-                                 'TYPE',
-                                 'BUDGET_ID',
-                                 'AMOUNT',
-                                 'META',
-                                 'CLEAR']
+    transaction_db_attributes = [
+        'ID', 'DATE', 'NAME', 'TYPE', 'BUDGET_ID', 'AMOUNT', 'META', 'CLEAR'
+    ]
 
     def __init__(self, transaction_dict={}):
         for key in transaction_dict:
@@ -40,7 +35,7 @@ class Transaction(object):
     def __setattr__(self, name, value):
         if name not in self.transaction_db_attributes:
             raise TransactionInvalidAttributeError(
-                    "Invalid Transaction object attribute %s" % name)
+                "Invalid Transaction object attribute %s" % name)
 
         if name is "DATE" and value:
             datetime.datetime.strptime(value, "%Y-%m-%d")

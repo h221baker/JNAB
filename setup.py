@@ -6,9 +6,7 @@ from os import path
 
 setup(
     name='jnab',
-
     version='0.0.0',
-
     description='James Need A Budget',
     long_description="",
 
@@ -18,12 +16,10 @@ setup(
 
     # Choose your license
     license='MIT',
-
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-
     test_suite="tests",
-    tests_require=['pytest' ],
+    tests_require=['pytest'],
 
     # Dependencies
-    install_requires=[ 'tinydb' ],
+    install_requires=['tinydb'],
 )

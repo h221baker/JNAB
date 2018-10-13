@@ -14,12 +14,12 @@ TEST_DB_FOLDER = os.path.join(os.path.dirname(__file__), 'test_resource')
 
 
 class TestDBAccountOverview(unittest.TestCase):
-
     def _setupTestDB(self):
         # TEMP HACK
         for db_file in os.listdir(TEST_DB_FOLDER):
-            shutil.copyfile(os.path.join(TEST_DB_FOLDER, db_file),
-                            os.path.join(self.temp_dir, db_file))
+            shutil.copyfile(
+                os.path.join(TEST_DB_FOLDER, db_file),
+                os.path.join(self.temp_dir, db_file))
 
         # The following the the right solution
         # simpledb = open(os.path.join(self.temp_dir, "simple.json"), mode='w')
@@ -39,10 +39,6 @@ class TestDBAccountOverview(unittest.TestCase):
         account_tbl = database.table(db.ACCOUNTS_TABLE_NAME)
 
         db_account_overview.DBAccountOverview(account_tbl)
-
-    def test_db_account_overview_init_bad_input(self):
-        with self.assertRaises(ValueError):
-            db_account_overview.DBAccountOverview(1)
 
     def test_db_account_overview_get_all_accounts_sanity(self):
         db_file = os.path.join(self.temp_dir, "sample_complete_accounts.json")

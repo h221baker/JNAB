@@ -10,11 +10,11 @@ logger = get_logger("account")
 
 
 class Currency(Enum):
-    USD = 1     # US Dollar
-    EURO = 2    # EURO
-    CHF = 3     # Swish Franc
-    CNY = 4     # Chinese Yuan
-    CAD = 5     # Canadian Dollar
+    USD = 1  # US Dollar
+    EURO = 2  # EURO
+    CHF = 3  # Swish Franc
+    CNY = 4  # Chinese Yuan
+    CAD = 5  # Canadian Dollar
 
 
 class Type(Enum):
@@ -36,13 +36,8 @@ class Account(object):
     # TODO: Quick adjust account balance
 
     account_db_attributes = [
-            'ID',
-            'NAME',
-            'TYPE',
-            'CURRENCY',
-            'RATE_TO',
-            'BALANCE',
-            'ACTIVE']
+        'ID', 'NAME', 'TYPE', 'CURRENCY', 'RATE_TO', 'BALANCE', 'ACTIVE'
+    ]
 
     def __init__(self, account_dict={}):
         for key in account_dict:
@@ -52,12 +47,12 @@ class Account(object):
     def __setattr__(self, name, value):
         if name not in self.account_db_attributes:
             raise AccountInvalidAttributeError(
-                    "Invalid Account object attribute %s" % name)
+                "Invalid Account object attribute %s" % name)
         # Do not allow permenent account attribute to be changed
         if name in ['ID', 'NAME', 'CURRENTY', 'TYPE'] and hasattr(self, name):
             raise AccountInvalidAttributeError(
-                    "Unable to change existing permenent"
-                    "account attribute %s" % name)
+                "Unable to change existing permenent"
+                "account attribute %s" % name)
 
         # TODO: Peform type check for value set
 
@@ -66,10 +61,8 @@ class Account(object):
             if type(value) is int:
                 super.__setattr__(self, name, Type(value))
             elif type(value) is str:
-                super.__setattr__(
-                        self,
-                        name,
-                        Type(Type.__getattr__(value.upper()).value))
+                super.__setattr__(self, name,
+                                  Type(Type.__getattr__(value.upper()).value))
             else:
                 raise ValueError("Illegal value type %s" % repr(type(value)))
         elif name == 'CURRENCY':
@@ -77,9 +70,8 @@ class Account(object):
                 super.__setattr__(self, name, Currency(value))
             elif type(value) is str:
                 super.__setattr__(
-                        self,
-                        name,
-                        Currency(Currency.__getattr__(value.upper()).value))
+                    self, name,
+                    Currency(Currency.__getattr__(value.upper()).value))
             else:
                 raise ValueError("Illegal value type %s" % repr(type(value)))
         elif name == 'NAME':
@@ -112,8 +104,7 @@ class Account(object):
     def check_sanity(self):
         for attr in self.account_db_attributes:
             if not hasattr(self, attr):
-                logger.debug(
-                        "Missing attr %s in account_obj" % attr)
+                logger.debug("Missing attr %s in account_obj" % attr)
                 return False
         return True
         # TODO: more in depth check of each field with type and content
@@ -135,7 +126,7 @@ class Account(object):
 
         # TODO: Check if is transfer transaction, if so create new
         #       Transaction for corresponding account and link 2 transactions
-        #       If transfer from account with different currency, need to 
+        #       If transfer from account with different currency, need to
         #       prompt user for exchange rate, or amount in origin currency
 
         # TODO: Update account BALANCE, make sure it is not in negative,
@@ -150,7 +141,6 @@ class Account(object):
 
         # Update account data in DB
         db.DB.get_instance().modify_account(self)
-
 
     def del_transaction(self, transaction_id):
         return db.DB.get_instance().del_transaction(self, transaction_id)

@@ -19,8 +19,8 @@ class JnabArgparser(argparse.ArgumentParser):
 
     # Override the exit function to only throw error instead of exiting
     def exit(self, status=0, message=None):
-        logger.info("JnabArgparser exit method called: (%d) %s" %
-                (status, message))
+        logger.info(
+            "JnabArgparser exit method called: (%d) %s" % (status, message))
         raise ArgumentParserError(message)
 
     # Override the error function to only throw error instead of calling exit
@@ -63,7 +63,6 @@ def arg_type_account_type(line):
 
 
 class JnabShell(cmd.Cmd):
-
     def __init__(self, database):
         super().__init__()
         self.database = database
@@ -73,56 +72,29 @@ class JnabShell(cmd.Cmd):
 
         # new account parser
         self.do_new_parser = JnabArgparser(
-                description="Argument parser for new account command")
+            description="Argument parser for new account command")
         self.do_new_parser.add_argument(
-                "-n",
-                "--name",
-                type=str,
-                required=True)
+            "-n", "--name", type=str, required=True)
         self.do_new_parser.add_argument(
-                "-t",
-                "--type",
-                type=arg_type_account_type,
-                required=True)
+            "-t", "--type", type=arg_type_account_type, required=True)
         self.do_new_parser.add_argument(
-                "-c",
-                "--currency",
-                type=arg_type_account_currency,
-                required=True)
+            "-c", "--currency", type=arg_type_account_currency, required=True)
 
         # add transaction parser
         self.do_add_parser = JnabArgparser(
-                description="Argument parser for add transaction command")
+            description="Argument parser for add transaction command")
         self.do_add_parser.add_argument(
-                "-n",
-                "--name",
-                type=str,
-                required=True)
+            "-n", "--name", type=str, required=True)
         self.do_add_parser.add_argument(
-                "-a",
-                "--amount",
-                type=int,
-                required=True)
+            "-a", "--amount", type=int, required=True)
         self.do_add_parser.add_argument(
-                "-d",
-                "--date",
-                type=str,
-                required=False)
+            "-d", "--date", type=str, required=False)
         self.do_add_parser.add_argument(
-                "-b",
-                "--budget",
-                type=str,
-                required=False)
+            "-b", "--budget", type=str, required=False)
         self.do_add_parser.add_argument(
-                "-t",
-                "--transfer",
-                action="store_true",
-                required=False)
+            "-t", "--transfer", action="store_true", required=False)
         self.do_add_parser.add_argument(
-                "-c",
-                "--clear",
-                action='store_true',
-                required=False)
+            "-c", "--clear", action='store_true', required=False)
 
     @classmethod
     def split_line(self, line):
@@ -131,6 +103,7 @@ class JnabShell(cmd.Cmd):
     """
     List all active accounts and their ID
     """
+
     def do_ls(self, line):
         # TODO: Add a verbose mode to show deactivated accouts too
         account_list = self.database.get_all_accounts()
@@ -166,6 +139,7 @@ class JnabShell(cmd.Cmd):
     """
     Select an account to work on
     """
+
     def do_sel(self, line):
         account = self._get_account(line)
         if account:
@@ -181,6 +155,7 @@ class JnabShell(cmd.Cmd):
     """
     Create new account
     """
+
     def do_new(self, line):
         argv = self.split_line(line)
         try:
@@ -208,6 +183,7 @@ class JnabShell(cmd.Cmd):
     """
     Disable an existing account
     """
+
     def do_deactive(self, line):
         pass
 
@@ -218,6 +194,7 @@ class JnabShell(cmd.Cmd):
     """
     Disable an existing account
     """
+
     def do_reactive(self, line):
         pass
 
@@ -228,6 +205,7 @@ class JnabShell(cmd.Cmd):
     """
     Add a transaction to the currently selected account
     """
+
     def do_add(self, line):
         if not self.curr_account:
             print("Please select an account first!!")

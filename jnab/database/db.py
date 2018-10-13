@@ -7,7 +7,6 @@ import account
 from util import *
 from . import db_account_overview
 
-
 DEFAULT_DB_FILENAME = 'jnab_db.json'
 ACCOUNTS_TABLE_NAME = "ACCOUNTS"
 ACCOUNT_TABLE_NAME_FORMAT = "JNAB_ACCOUNT_%d"
@@ -34,14 +33,13 @@ class DB(object):
                 self.db.close()
                 raise ValueError("Invalid DB, missing 'accounts' table!")
         elif db_path and create_new:
-            logger.info(
-                    "DB file (%s) is missing,"
-                    "and create_new=%s, hence creating new DB!!" %
-                    (db_path, create_new))
+            logger.info("DB file (%s) is missing,"
+                        "and create_new=%s, hence creating new DB!!" %
+                        (db_path, create_new))
             self.db = tinydb.TinyDB(db_path)
         else:
             raise ValueError(
-                    "Unexpected dbindex file (%s) is missing" % db_path)
+                "Unexpected dbindex file (%s) is missing" % db_path)
 
         accounts_table = self.db.table(ACCOUNTS_TABLE_NAME)
         self.accountOverview = \
@@ -63,7 +61,7 @@ class DB(object):
     def add_transaction(self, account_obj, transaction_obj):
         # Get corresponding db table for account
         account_table = self.db.table(
-                ACCOUNT_TABLE_NAME_FORMAT % account_obj.ID)
+            ACCOUNT_TABLE_NAME_FORMAT % account_obj.ID)
         transaction_obj.ID = account_table._get_next_id()
         account_table.insert(transaction_obj._dict())
 
@@ -84,9 +82,8 @@ class DB(object):
 
         # Create new accoutns table using the account id
         # TODO: Test this
-        logger.info(
-                "Creating new account transaction table for account ID %s" %
-                account_obj.ID)
+        logger.info("Creating new account transaction table for account ID %s"
+                    % account_obj.ID)
         self.db.table(ACCOUNT_TABLE_NAME_FORMAT % account_obj.ID)
 
     def del_account(self, *warg, **kwarg):

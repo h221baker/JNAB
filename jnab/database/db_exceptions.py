@@ -24,4 +24,3 @@ class DBDelError(Exception):
 
 class DBAccountDelError(DBDelError):
     pass
-

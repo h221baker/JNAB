@@ -12,7 +12,6 @@ from jnab import transaction
 
 
 class TestTransaction(unittest.TestCase):
-
     def setUp(self):
         pass
 

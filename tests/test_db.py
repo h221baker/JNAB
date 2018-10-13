@@ -20,30 +20,32 @@ TEST_DB_FOLDER = os.path.join(os.path.dirname(__file__), 'test_resource')
 class TestDB(unittest.TestCase):
 
     SIMPLE_ACCOUNT = {
-            "ID": 1,
-            "NAME": "Chase Reserve",
-            "TYPE": 1,
-            "CURRENCY": 1,
-            "RATE_TO": 1,
-            "BALANCE": 100,
-            "ACTIVE": False}
+        "ID": 1,
+        "NAME": "Chase Reserve",
+        "TYPE": 1,
+        "CURRENCY": 1,
+        "RATE_TO": 1,
+        "BALANCE": 100,
+        "ACTIVE": False
+    }
 
     TEST_TRANSACTION_1 = {
-            'ID': 1,
-            'DATE': "2018-02-20",
-            'NAME': "Sample type",
-            'TYPE': 2,
-            'BUDGET_ID': None,
-            'AMOUNT': 123,
-            'META': None,
-            'CLEAR': True
-            }
+        'ID': 1,
+        'DATE': "2018-02-20",
+        'NAME': "Sample type",
+        'TYPE': 2,
+        'BUDGET_ID': None,
+        'AMOUNT': 123,
+        'META': None,
+        'CLEAR': True
+    }
 
     def _setupTestDB(self):
         # TEMP HACK
         for db_file in os.listdir(TEST_DB_FOLDER):
-            shutil.copyfile(os.path.join(TEST_DB_FOLDER, db_file),
-                            os.path.join(self.temp_dir, db_file))
+            shutil.copyfile(
+                os.path.join(TEST_DB_FOLDER, db_file),
+                os.path.join(self.temp_dir, db_file))
 
         # The following the the right solution
         # simpledb = open(os.path.join(self.temp_dir, "simple.json"), mode='w')
@@ -129,15 +131,14 @@ class TestDB(unittest.TestCase):
         self.database = db.DB(db_file, create_new=False)
         with self.assertRaises(db_exceptions.DBAccountLookupError):
             account_obj = self.database.get_account(
-                    account_name='Chase NOT Real')
+                account_name='Chase NOT Real')
 
         with self.assertRaises(db_exceptions.DBAccountLookupError):
             account_obj = self.database.get_account(account_id=99)
 
         with self.assertRaises(db_exceptions.DBAccountLookupError):
             account_obj = self.database.get_account(
-                    account_id=99,
-                    account_name='Chase NOT Real')
+                account_id=99, account_name='Chase NOT Real')
 
     # def test_db_get_account_multiple_accounts(self):
     #     db_file = os.path.join(self.temp_dir, "simple.json")
@@ -183,12 +184,13 @@ class TestDB(unittest.TestCase):
 
     def test_db_add_account_sanity(self):
         simple_account = {
-                "NAME": "Chase Reserve",
-                "TYPE": 1,
-                "CURRENCY": 1,
-                "RATE_TO": 1,
-                "BALANCE": 100,
-                "ACTIVE": False}
+            "NAME": "Chase Reserve",
+            "TYPE": 1,
+            "CURRENCY": 1,
+            "RATE_TO": 1,
+            "BALANCE": 100,
+            "ACTIVE": False
+        }
         db_file = os.path.join(self.temp_dir, "new_account.json")
         self.database = db.DB(db_file, create_new=True)
 
@@ -198,7 +200,7 @@ class TestDB(unittest.TestCase):
 
         self.database = db.DB(db_file, create_new=False)
         account_obj_from_db = self.database.get_account(
-                account_name=account_obj.NAME)
+            account_name=account_obj.NAME)
         self.database._close()
 
         self.assertIsNotNone(account_obj_from_db)
@@ -220,7 +222,7 @@ class TestDB(unittest.TestCase):
         self.database.del_account(account_id=1, account_name="Chase Reserve")
 
         account_obj = self.database.get_account(
-                account_id=1, account_name="Chase Reserve")
+            account_id=1, account_name="Chase Reserve")
         self.assertFalse(account_obj.ACTIVE)
 
     def test_db_del_account_id(self):
@@ -230,7 +232,7 @@ class TestDB(unittest.TestCase):
         self.database.del_account(account_id=1)
 
         account_obj = self.database.get_account(
-                account_id=1, account_name="Chase Reserve")
+            account_id=1, account_name="Chase Reserve")
         self.assertFalse(account_obj.ACTIVE)
 
     def test_db_del_account_name(self):
@@ -240,7 +242,7 @@ class TestDB(unittest.TestCase):
         self.database.del_account(account_name="Chase Reserve")
 
         account_obj = self.database.get_account(
-                account_id=1, account_name="Chase Reserve")
+            account_id=1, account_name="Chase Reserve")
         self.assertFalse(account_obj.ACTIVE)
 
     def test_db_modify_account_sanity(self):
@@ -248,14 +250,14 @@ class TestDB(unittest.TestCase):
         self.database = db.DB(db_file, create_new=False)
 
         account_obj = self.database.get_account(
-                account_id=1, account_name="Chase Reserve")
+            account_id=1, account_name="Chase Reserve")
         account_obj.BALANCE = 9999
         self.database.modify_account(account_obj)
         self.database._close()
 
         self.database = db.DB(db_file, create_new=False)
         account_obj = self.database.get_account(
-                account_id=1, account_name="Chase Reserve")
+            account_id=1, account_name="Chase Reserve")
         self.assertEqual(account_obj.BALANCE, 9999)
 
     def test_db_modify_account_error(self):
